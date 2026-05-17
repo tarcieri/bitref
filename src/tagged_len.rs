@@ -65,23 +65,20 @@ impl TaggedLen {
 
         let (head_byte, head_offset) = self.offsets_unchecked(bits.start);
         let (tail_byte, tail_offset) = self.offsets_unchecked(bits.end);
+        let mut byte_len = tail_byte.checked_sub(head_byte).expect(OVERFLOW_MSG);
 
-        if let Some(mut byte_len) = tail_byte.checked_sub(head_byte) {
-            // The computed `byte_len` won't include this extra byte if `tail_offset` is non-zero.
-            if !tail_offset.is_zero() {
-                byte_len += 1;
-            }
-
-            let sliced_len = Self {
-                byte_len,
-                head_offset,
-                tail_offset,
-            };
-
-            return Ok((sliced_len, head_byte));
+        // The computed `byte_len` won't include this extra byte if `tail_offset` is non-zero.
+        if !tail_offset.is_zero() {
+            byte_len += 1;
         }
 
-        Err(IndexOutOfBounds)
+        let sliced_len = Self {
+            byte_len,
+            head_offset,
+            tail_offset,
+        };
+
+        Ok((sliced_len, head_byte))
     }
 
     /// Get the length of this slice in bytes.
