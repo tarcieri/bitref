@@ -66,3 +66,71 @@ impl ExactSizeIterator for Iter<'_> {
 }
 
 impl FusedIterator for Iter<'_> {}
+
+#[cfg(test)]
+mod tests {
+    use crate::BitSlice;
+    const BYTES: [u8; 2] = [0xa0, 0x0a];
+    const BITS: [bool; 16] = [
+        true, false, true, false, false, false, false, false, false, false, false, false, true,
+        false, true, false,
+    ];
+
+    #[test]
+    fn iter_count() {
+        assert_eq!(BitSlice::EMPTY.iter().count(), 0);
+        assert_eq!(BitSlice::new(&BYTES).iter().count(), 16);
+    }
+
+    #[test]
+    #[allow(clippy::iter_nth_zero)]
+    fn iter_nth() {
+        let bits = BitSlice::new(&BYTES);
+        assert_eq!(bits.iter().nth(0), Some(BITS[0]));
+        assert_eq!(bits.iter().nth(7), Some(BITS[7]));
+        assert_eq!(bits.iter().nth(15), Some(BITS[15]));
+        assert_eq!(bits.iter().nth(16), None);
+    }
+
+    #[test]
+    fn iter_last() {
+        assert_eq!(BitSlice::new(&BYTES).iter().last(), Some(BITS[15]));
+        assert_eq!(BitSlice::EMPTY.iter().last(), None);
+    }
+
+    #[test]
+    fn iter_next_back() {
+        let bits = BitSlice::new(&BYTES);
+        assert!(bits.iter().rev().eq(BITS.iter().copied().rev()));
+    }
+
+    #[test]
+    fn iter_nth_back() {
+        let bits = BitSlice::new(&BYTES);
+        assert_eq!(bits.iter().nth_back(0), Some(BITS[15]));
+        assert_eq!(bits.iter().nth_back(7), Some(BITS[8]));
+        assert_eq!(bits.iter().nth_back(15), Some(BITS[0]));
+        assert_eq!(bits.iter().nth_back(16), None);
+    }
+
+    #[test]
+    fn iter_exact_size() {
+        let bits = BitSlice::new(&BYTES);
+        let mut iter = bits.iter();
+        assert_eq!(iter.len(), 16);
+        assert!(iter.next().is_some());
+        assert_eq!(iter.len(), 15);
+        assert!(iter.next_back().is_some());
+        assert_eq!(iter.len(), 14);
+    }
+
+    #[test]
+    fn iter_double_ended() {
+        let bits = BitSlice::new(&BYTES);
+        let mut iter = bits.iter();
+        assert_eq!(iter.next(), Some(BITS[0]));
+        assert_eq!(iter.next_back(), Some(BITS[15]));
+        assert_eq!(iter.next(), Some(BITS[1]));
+        assert_eq!(iter.next_back(), Some(BITS[14]));
+    }
+}
