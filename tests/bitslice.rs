@@ -110,6 +110,7 @@ fn index_range_to_slicing() {
 
 // TODO(tarcieri): test mutations
 #[test]
+#[allow(clippy::unnecessary_mut_passed)]
 fn index_mut_range_slicing() {
     let mut bytes = BYTES;
     let bits = BitSlice::new_mut(&mut bytes);
@@ -117,33 +118,36 @@ fn index_mut_range_slicing() {
     // Ensure `&mut bitslice[i..j]` behaves like `&mut [bool]`.
     for i in 0..BITS.len() {
         for j in i..BITS.len() {
-            verify_against_expected(&bits[i..j], i..j);
+            verify_against_expected(&mut bits[i..j], i..j);
         }
     }
 }
 
 #[test]
+#[allow(clippy::unnecessary_mut_passed)]
 fn index_mut_range_full_slicing() {
     let mut bytes = BYTES;
     let bits = BitSlice::new_mut(&mut bytes);
-    verify_against_expected(&bits[..], 0..BITS.len());
+    verify_against_expected(&mut bits[..], 0..BITS.len());
 }
 
 #[test]
+#[allow(clippy::unnecessary_mut_passed)]
 fn index_mut_range_from_slicing() {
     let mut bytes = BYTES;
     let bits = BitSlice::new_mut(&mut bytes);
     for i in 0..BITS.len() {
-        verify_against_expected(&bits[i..], i..BITS.len());
+        verify_against_expected(&mut bits[i..], i..BITS.len());
     }
 }
 
 #[test]
-fn index_mut_range_to() {
+#[allow(clippy::unnecessary_mut_passed)]
+fn index_mut_range_to_slicing() {
     let mut bytes = BYTES;
     let bits = BitSlice::new_mut(&mut bytes);
     for j in 0..BITS.len() {
-        verify_against_expected(&bits[..j], 0..j);
+        verify_against_expected(&mut bits[..j], 0..j);
     }
 }
 
