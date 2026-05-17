@@ -83,7 +83,13 @@ fn index_range_slicing() {
     }
 }
 
-// TODO(tarcieri): test `IndexMut<RangeFrom>`
+#[test]
+#[allow(clippy::redundant_slicing)]
+fn index_range_full_slicing() {
+    let bits = BitSlice::new(&BYTES);
+    verify_against_expected(&bits[..], 0..BITS.len());
+}
+
 #[test]
 fn index_range_from_slicing() {
     let bits = BitSlice::new(&BYTES);
@@ -91,6 +97,14 @@ fn index_range_from_slicing() {
     // Ensure `&bitslice[i..]` behaves like `&[bool]`.
     for i in 0..BITS.len() {
         verify_against_expected(&bits[i..], i..BITS.len());
+    }
+}
+
+#[test]
+fn index_range_to_slicing() {
+    let bits = BitSlice::new(&BYTES);
+    for j in 0..BITS.len() {
+        verify_against_expected(&bits[..j], 0..j);
     }
 }
 
@@ -105,6 +119,31 @@ fn index_mut_range_slicing() {
         for j in i..BITS.len() {
             verify_against_expected(&bits[i..j], i..j);
         }
+    }
+}
+
+#[test]
+fn index_mut_range_full_slicing() {
+    let mut bytes = BYTES;
+    let bits = BitSlice::new_mut(&mut bytes);
+    verify_against_expected(&bits[..], 0..BITS.len());
+}
+
+#[test]
+fn index_mut_range_from_slicing() {
+    let mut bytes = BYTES;
+    let bits = BitSlice::new_mut(&mut bytes);
+    for i in 0..BITS.len() {
+        verify_against_expected(&bits[i..], i..BITS.len());
+    }
+}
+
+#[test]
+fn index_mut_range_to() {
+    let mut bytes = BYTES;
+    let bits = BitSlice::new_mut(&mut bytes);
+    for j in 0..BITS.len() {
+        verify_against_expected(&bits[..j], 0..j);
     }
 }
 
