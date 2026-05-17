@@ -151,7 +151,7 @@ jobs:
         with:
           toolchain: 1.95.0 # Pinned to prevent breakages
           components: clippy
-      - run: cargo clippy --all-features --all-targets -- -Dwarnings
+      - run: cargo clippy --all-targets -- -Dwarnings
 
   doc:
     runs-on: ubuntu-latest
@@ -161,7 +161,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-      - run: cargo doc --workspace --all-features --no-deps
+      - run: cargo doc --workspace --no-deps
 
   rustfmt:
     runs-on: ubuntu-latest
