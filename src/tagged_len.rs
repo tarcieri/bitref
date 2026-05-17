@@ -2,10 +2,7 @@
 //! normal tagged pointer.
 
 use crate::IndexOutOfBounds;
-use core::{
-    fmt::{self, Debug},
-    ops::Range,
-};
+use core::ops::Range;
 
 /// Panic message in the event of overflow.
 const OVERFLOW_MSG: &str = "overflow";
@@ -153,19 +150,8 @@ impl TaggedLen {
 
 /// A 3-bit integer, used to represent a specific bit within a byte.
 #[allow(non_camel_case_types)]
-#[derive(Clone, Copy, Default, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u8)]
-enum u3 {
-    #[default]
-    V0 = 0,
-    V1 = 1,
-    V2 = 2,
-    V3 = 3,
-    V4 = 4,
-    V5 = 5,
-    V6 = 6,
-    V7 = 7,
-}
+#[derive(Clone, Copy, Default, Debug, Eq, PartialEq, PartialOrd, Ord)]
+struct u3(u8);
 
 impl u3 {
     /// Size in bits.
@@ -175,28 +161,19 @@ impl u3 {
     const MAX: usize = 0b111;
 
     /// Create a new `u3` from the lowest three bits of a `usize`, masking off the rest.
+    #[allow(clippy::cast_possible_truncation, reason = "intentional truncation")]
     const fn new(n: usize) -> Self {
-        match n & Self::MAX {
-            0 => Self::V0,
-            1 => Self::V1,
-            2 => Self::V2,
-            3 => Self::V3,
-            4 => Self::V4,
-            5 => Self::V5,
-            6 => Self::V6,
-            7 => Self::V7,
-            _ => unreachable!(),
-        }
+        Self((n & Self::MAX) as u8)
     }
 
     /// Convert this `u3` to a `usize`
     const fn value(self) -> usize {
-        self as usize
+        self.0 as usize
     }
 
     /// Is this `u3` equal to zero?
     const fn is_zero(self) -> bool {
-        self.value() == 0
+        self.0 == 0
     }
 
     /// Compute a 1-bit byte-width mask to select the bit identified by this `u3`.
@@ -205,18 +182,12 @@ impl u3 {
     }
 }
 
-impl Debug for u3 {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.value())
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{TaggedLen, u3};
+    use super::TaggedLen;
 
     #[cfg(all(any(unix, windows), not(miri)))]
-    use {core::ops::Range, proptest::prelude::*};
+    use {super::u3, core::ops::Range, proptest::prelude::*};
 
     #[test]
     fn bit_len() {
@@ -263,8 +234,8 @@ mod tests {
 
         let (tagged_len, byte_offset) = len0.slice(0..0).unwrap();
         assert_eq!(tagged_len.byte_len, 0);
-        assert_eq!(tagged_len.head_offset, u3::V0);
-        assert_eq!(tagged_len.tail_offset, u3::V0);
+        assert_eq!(tagged_len.head_offset.value(), 0);
+        assert_eq!(tagged_len.tail_offset.value(), 0);
         assert_eq!(byte_offset, 0);
 
         // len: 1
@@ -280,8 +251,8 @@ mod tests {
 
         let (tagged_len, byte_offset) = len1.slice(1..8).unwrap();
         assert_eq!(tagged_len.byte_len, 1);
-        assert_eq!(tagged_len.head_offset, u3::V1);
-        assert_eq!(tagged_len.tail_offset, u3::V0);
+        assert_eq!(tagged_len.head_offset.value(), 1);
+        assert_eq!(tagged_len.tail_offset.value(), 0);
         assert_eq!(byte_offset, 0);
 
         // len: 1 (with sub-bit positioning)
@@ -290,8 +261,8 @@ mod tests {
 
         let (tagged_len, byte_offset) = len1_subbits.slice(1..5).unwrap();
         assert_eq!(tagged_len.byte_len, 1);
-        assert_eq!(tagged_len.head_offset, u3::V2);
-        assert_eq!(tagged_len.tail_offset, u3::V6);
+        assert_eq!(tagged_len.head_offset.value(), 2);
+        assert_eq!(tagged_len.tail_offset.value(), 6);
         assert_eq!(byte_offset, 0);
 
         // len: 2
@@ -302,14 +273,14 @@ mod tests {
         let (tagged_len, byte_offset) = len2.slice(3..14).unwrap();
         assert_eq!(tagged_len.byte_len(), 2);
         assert_eq!(tagged_len.bit_len(), 11);
-        assert_eq!(tagged_len.head_offset, u3::V3);
-        assert_eq!(tagged_len.tail_offset, u3::V6);
+        assert_eq!(tagged_len.head_offset.value(), 3);
+        assert_eq!(tagged_len.tail_offset.value(), 6);
         assert_eq!(byte_offset, 0);
 
         let (tagged_len, byte_offset) = len2.slice(9..15).unwrap();
         assert_eq!(tagged_len.byte_len, 1);
-        assert_eq!(tagged_len.head_offset, u3::V1);
-        assert_eq!(tagged_len.tail_offset, u3::V7);
+        assert_eq!(tagged_len.head_offset.value(), 1);
+        assert_eq!(tagged_len.tail_offset.value(), 7);
         assert_eq!(byte_offset, 1);
     }
 
