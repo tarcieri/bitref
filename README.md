@@ -3,9 +3,9 @@
 [![Crate][crate-image]][crate-link]
 [![Docs][docs-image]][docs-link]
 [![Build Status][build-image]][build-link]
+[![codecov][codecov-image]][codecov-link]
 ![Apache 2.0/MIT Licensed][license-image]
 ![MSRV][msrv-image]
-[![Project Chat][chat-image]][chat-link]
 
 Provides `&BitSlice`/`&mut BitSlice`, a fat pointer-sized reference type which can be initialized
 from `&[u8]`/`&mut [u8]` and can be used to implement any reference-based patterns that possible
@@ -71,14 +71,13 @@ dual licensed as above, without any additional terms or conditions.
 [crate-link]: https://crates.io/crates/bitref
 [docs-image]: https://docs.rs/bitref/badge.svg
 [docs-link]: https://docs.rs/bitref/
+[build-image]: https://github.com/tarcieri/bitref/actions/workflows/bitref.yml/badge.svg
+[build-link]: https://github.com/tarcieri/bitref/actions/workflows/bitref.yml
+[codecov-image]: https://codecov.io/gh/tarcieri/bitref/graph/badge.svg?token=A4BNQ7ELYW
+[codecov-link]: https://codecov.io/gh/tarcieri/bitref
 [license-image]: https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg
 [msrv-image]: https://img.shields.io/badge/rustc-1.85+-blue.svg
-[build-image]: https://github.com/RustCrypto/utils/actions/workflows/bitref.yml/badge.svg
-[build-link]: https://github.com/RustCrypto/utils/actions/workflows/bitref.yml
-[chat-image]: https://img.shields.io/badge/zulip-join_chat-blue.svg
-[chat-link]: https://rustcrypto.zulipchat.com/#narrow/stream/260052-utils
 
 [//]: # (links)
 
-[RustCrypto]: https://github.com/RustCrypto
 [`bitvec`]: https://docs.rs/bitvec
