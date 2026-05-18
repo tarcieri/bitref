@@ -77,44 +77,23 @@ mod tests {
     ];
 
     #[test]
-    fn iter_count() {
+    fn count() {
         assert_eq!(BitSlice::EMPTY.iter().count(), 0);
         assert_eq!(BitSlice::new(&BYTES).iter().count(), 16);
     }
 
     #[test]
-    #[allow(clippy::iter_nth_zero)]
-    fn iter_nth() {
+    fn double_ended() {
         let bits = BitSlice::new(&BYTES);
-        assert_eq!(bits.iter().nth(0), Some(BITS[0]));
-        assert_eq!(bits.iter().nth(7), Some(BITS[7]));
-        assert_eq!(bits.iter().nth(15), Some(BITS[15]));
-        assert_eq!(bits.iter().nth(16), None);
+        let mut iter = bits.iter();
+        assert_eq!(iter.next(), Some(BITS[0]));
+        assert_eq!(iter.next_back(), Some(BITS[15]));
+        assert_eq!(iter.next(), Some(BITS[1]));
+        assert_eq!(iter.next_back(), Some(BITS[14]));
     }
 
     #[test]
-    fn iter_last() {
-        assert_eq!(BitSlice::new(&BYTES).iter().last(), Some(BITS[15]));
-        assert_eq!(BitSlice::EMPTY.iter().last(), None);
-    }
-
-    #[test]
-    fn iter_next_back() {
-        let bits = BitSlice::new(&BYTES);
-        assert!(bits.iter().rev().eq(BITS.iter().copied().rev()));
-    }
-
-    #[test]
-    fn iter_nth_back() {
-        let bits = BitSlice::new(&BYTES);
-        assert_eq!(bits.iter().nth_back(0), Some(BITS[15]));
-        assert_eq!(bits.iter().nth_back(7), Some(BITS[8]));
-        assert_eq!(bits.iter().nth_back(15), Some(BITS[0]));
-        assert_eq!(bits.iter().nth_back(16), None);
-    }
-
-    #[test]
-    fn iter_exact_size() {
+    fn exact_size() {
         let bits = BitSlice::new(&BYTES);
         let mut iter = bits.iter();
         assert_eq!(iter.len(), 16);
@@ -125,12 +104,42 @@ mod tests {
     }
 
     #[test]
-    fn iter_double_ended() {
+    fn last() {
+        assert_eq!(BitSlice::new(&BYTES).iter().last(), Some(BITS[15]));
+        assert_eq!(BitSlice::EMPTY.iter().last(), None);
+    }
+
+    #[test]
+    fn next_back() {
+        let bits = BitSlice::new(&BYTES);
+        assert!(bits.iter().rev().eq(BITS.iter().copied().rev()));
+    }
+
+    #[test]
+    #[allow(clippy::iter_nth_zero)]
+    fn nth() {
+        let bits = BitSlice::new(&BYTES);
+        assert_eq!(bits.iter().nth(0), Some(BITS[0]));
+        assert_eq!(bits.iter().nth(7), Some(BITS[7]));
+        assert_eq!(bits.iter().nth(15), Some(BITS[15]));
+        assert_eq!(bits.iter().nth(16), None);
+    }
+
+    #[test]
+    fn nth_back() {
+        let bits = BitSlice::new(&BYTES);
+        assert_eq!(bits.iter().nth_back(0), Some(BITS[15]));
+        assert_eq!(bits.iter().nth_back(7), Some(BITS[8]));
+        assert_eq!(bits.iter().nth_back(15), Some(BITS[0]));
+        assert_eq!(bits.iter().nth_back(16), None);
+    }
+
+    #[test]
+    fn size_hint() {
         let bits = BitSlice::new(&BYTES);
         let mut iter = bits.iter();
-        assert_eq!(iter.next(), Some(BITS[0]));
-        assert_eq!(iter.next_back(), Some(BITS[15]));
-        assert_eq!(iter.next(), Some(BITS[1]));
-        assert_eq!(iter.next_back(), Some(BITS[14]));
+        assert_eq!(iter.size_hint(), (16, Some(16)));
+        assert!(iter.next().is_some());
+        assert_eq!(iter.size_hint(), (15, Some(15)));
     }
 }
