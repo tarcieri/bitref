@@ -1,7 +1,7 @@
 [package]
 name = "bitref"
 description = "Reference types for bitstrings with bit-level slicing support"
-version = "0.0.0"
+version = "0.0.1"
 authors = ["Tony Arcieri"]
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/tarcieri/bitref"
