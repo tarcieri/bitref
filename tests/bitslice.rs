@@ -186,6 +186,22 @@ fn len() {
 }
 
 #[test]
+fn partial_eq() {
+    let zeros = BitSlice::new(&[0, 0]);
+    let bits = BitSlice::new(&BYTES);
+
+    // Length mismatch
+    assert_ne!(BitSlice::EMPTY, bits);
+
+    // Contents mismatch
+    assert_ne!(zeros, bits);
+
+    assert_eq!(BitSlice::EMPTY, BitSlice::EMPTY);
+    assert_eq!(zeros, zeros);
+    assert_eq!(bits, bits);
+}
+
+#[test]
 fn set_bit() {
     let mut bytes = [0x0, 0x0];
     let bits = BitSlice::new_mut(&mut bytes);
