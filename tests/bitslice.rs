@@ -2,7 +2,7 @@
 
 #![expect(clippy::unwrap_used, reason = "tests")]
 
-use bitref::BitSlice;
+use bitref::{BitSlice, IndexOutOfBounds};
 use core::ops::Range;
 
 const BYTES: [u8; 2] = [0xa0, 0x0a];
@@ -18,6 +18,26 @@ fn debug() {
 
     let bits2 = &bits[1..14];
     assert_eq!(&format!("{bits2:?}"), "BitSlice([0100000000010])");
+}
+
+#[test]
+fn display_ioob_error() {
+    assert_eq!(IndexOutOfBounds.to_string(), "index out of bounds");
+}
+
+#[test]
+fn from_new_equivalence() {
+    assert_eq!(BitSlice::new(&BYTES), <&BitSlice>::from(BYTES.as_slice()));
+}
+
+#[test]
+fn from_new_equivalence_mut() {
+    let mut bytes1 = BYTES;
+    let mut bytes2 = BYTES;
+    assert_eq!(
+        BitSlice::new_mut(&mut bytes1),
+        <&mut BitSlice>::from(bytes2.as_mut_slice())
+    );
 }
 
 #[test]
