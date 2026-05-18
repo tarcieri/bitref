@@ -74,6 +74,8 @@ fn get_slice() {
             verify_against_expected(bitslice, i..j);
         }
     }
+
+    assert!(bits.get_slice(0..(BITS.len() + 1)).is_err());
 }
 
 // TODO(tarcieri): test mutations
@@ -89,6 +91,8 @@ fn get_mut_slice() {
             verify_against_expected(bitslice, i..j);
         }
     }
+
+    assert!(bits.get_mut_slice(0..(BITS.len() + 1)).is_err());
 }
 
 #[test]
