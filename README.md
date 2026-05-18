@@ -30,10 +30,9 @@ This crate relies on operations which are not yet fully specified in the Rust me
 while sound in all existing supported versions of the Rust compiler, may result in undefined
 behavior in future versions.
 
-Thus this crate is considered EXPERIMENTAL, and while it's been written with the intent of future
-use in cryptographic applications by minimizing use of `unsafe` and ensuring an otherwise simple and
-minimal implementation, until this situation changes it should not be considered ready for
-production use.
+Thus this crate is considered EXPERIMENTAL, and while it's been written with the intent of
+minimizing use of `unsafe` and ensuring an otherwise simple and minimal implementation, until this
+situation changes it should not be considered ready for production use.
 
 CI checks the crate is sound under Miri with `-Zmiri-tree-borrows -Zmiri-strict-provenance` which
 checks the code under the Tree Borrows model, however it is known to fail under Stacked Borrows.
