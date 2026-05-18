@@ -166,13 +166,11 @@ impl BitSlice {
     /// Return the last bit in the bit slice, or `None` if it's empty.
     #[must_use]
     pub const fn last(&self) -> Option<bool> {
-        if let Some(index) = self.len().checked_sub(1) {
-            if let Ok(bit) = self.get_bit(index) {
-                return Some(bit);
-            }
+        if let Ok(bit) = self.get_bit(self.len().saturating_sub(1)) {
+            Some(bit)
+        } else {
+            None
         }
-
-        None
     }
 
     /// Get the bit at the given position within the bit slice.
@@ -279,13 +277,10 @@ impl BitSlice {
     /// Return the last bit and the rest of the elements of the bit slice, or `None` if it's empty.
     #[must_use]
     pub const fn split_last(&self) -> Option<(bool, &Self)> {
-        if let Some(index) = self.len().checked_sub(1) {
-            match (self.get_bit(index), self.get_slice(0..index)) {
-                (Ok(bit), Ok(rest)) => Some((bit, rest)),
-                _ => None,
-            }
-        } else {
-            None
+        let index = self.len().saturating_sub(1);
+        match (self.get_bit(index), self.get_slice(0..index)) {
+            (Ok(bit), Ok(rest)) => Some((bit, rest)),
+            _ => None,
         }
     }
 }
