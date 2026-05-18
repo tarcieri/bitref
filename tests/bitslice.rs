@@ -92,6 +92,22 @@ fn get_mut_slice() {
 }
 
 #[test]
+fn index_usize() {
+    let bits = BitSlice::new(&BYTES);
+
+    for (i, expected) in BITS.into_iter().enumerate() {
+        assert_eq!(bits[i], expected);
+    }
+}
+
+#[test]
+#[should_panic]
+fn index_usize_oob() {
+    let bits = BitSlice::new(&BYTES);
+    let _ = bits[bits.len()];
+}
+
+#[test]
 fn index_range_slicing() {
     let bits = BitSlice::new(&BYTES);
 
